@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg">
+
+    <TextView
+        android:id="@+id/add_record"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:background="@drawable/text_background"
+        android:gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:drawableLeft="@android:drawable/ic_menu_add"
+        android:text="@string/add_new_record"/>
+
+    <RelativeLayout
+        android:id="@+id/total"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/total_income_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/total_income"
+            android:gravity="left"/>
+
+        <TextView
+            android:id="@+id/total_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/total_income_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="right"
+            android:text="@string/total_money"/>
+
+        <TextView
+            android:id="@+id/total_outcome_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/total_income_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/total_outcome"
+            android:gravity="left"/>
+
+        <TextView
+            android:id="@+id/total_outcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/total_income"
+            android:layout_toRightOf="@id/total_outcome_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="right"
+            android:text="@string/total_money"/>
+
+        <TextView
+            android:id="@+id/result_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/total_outcome_label"
+            android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/result"
+            android:gravity="left"/>
+
+        <TextView
+            android:id="@+id/result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/total_outcome"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/result_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="right"
+            android:text="@string/result_money"/>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="fill_parent"
+        android:layout_height="5dip"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="5dip"
+        android:layout_above="@id/total"
+        android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="fill_parent"
+        android:layout_height="5dip"
+        android:layout_below="@id/add_record"
+        android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/divider2"
+        android:layout_below="@id/divider1"/>
+
+</RelativeLayout>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+	<LinearLayout
+	    android:orientation="vertical"
+        android:layout_marginRight="10dip"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+	
+		<TextView
+		    android:id="@+id/label_name"
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content"
+		    android:textAppearance="?android:attr/textAppearanceLarge"
+		    android:text="@string/name"/>
+	
+	    <TextView
+	        android:id="@+id/name"
+	        android:gravity="right"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"/>
+
+	    <View
+	        android:layout_width="fill_parent"
+	        android:layout_height="5dip"
+	        android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+	    <TextView
+	        android:id="@+id/label_amount"
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceLarge"
+	        android:text="@string/amount"/>
+	
+	    <TextView
+	        android:id="@+id/amount"
+	        android:gravity="right"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"/>
+	
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+	
+	    <TextView
+	        android:id="@+id/label_type"
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceLarge"
+	        android:text="@string/type"/>
+	
+	    <TextView
+	        android:id="@+id/type"
+	        android:gravity="right"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+        <TextView
+            android:id="@+id/label_payment"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/payment"/>
+    
+        <TextView
+            android:id="@+id/payment"
+            android:gravity="right"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+        <TextView
+            android:id="@+id/label_io"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/io"/>
+    
+        <TextView
+            android:id="@+id/io"
+            android:gravity="right"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+        <TextView
+            android:id="@+id/label_member"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/member"/>
+    
+        <TextView
+            android:id="@+id/member"
+            android:gravity="right"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+        <TextView
+            android:id="@+id/label_date"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/date"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:gravity="right"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+	
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+	
+	    <TextView
+	        android:id="@+id/label_remark"
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceLarge"
+	        android:text="@string/remark"/>
+	
+	    <TextView
+	        android:id="@+id/remark"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dip"
+            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+
+        <TextView
+            android:id="@+id/label_snapshot"
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/snapshot"/>
+
+        <Gallery
+            android:id="@+id/gallery_snapshot"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+	</LinearLayout>
+</ScrollView>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+    	<LinearLayout
+    	    android:orientation="vertical"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent">
+    	
+    		<TextView
+    		    android:id="@+id/label_name"
+    		    android:layout_width="fill_parent" 
+    		    android:layout_height="wrap_content"
+    		    android:textAppearance="?android:attr/textAppearanceLarge"
+    		    android:text="@string/name"/>
+    	
+    	    <EditText
+    	        android:id="@+id/edite_name"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="wrap_content"/>
+    	
+    	    <TextView 
+    	        android:id="@+id/label_amount"
+    	        android:layout_width="fill_parent" 
+    	        android:layout_height="wrap_content"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:text="@string/amount"/>
+    	
+    	    <EditText
+    	        android:id="@+id/edite_amount" 
+    	        android:gravity="right"
+    	        android:singleLine="true"
+    	        android:inputType="numberDecimal"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="wrap_content"/>
+    	
+    	    <TextView
+    	        android:id="@+id/label_type"
+    	        android:layout_width="fill_parent" 
+    	        android:layout_height="wrap_content"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:text="@string/type"/>
+    	
+    	    <Spinner
+    	        android:id="@+id/spinner_type"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="wrap_content"/>
+    
+           <TextView
+               android:id="@+id/label_payment"
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:text="@string/payment"/>
+       
+           <Spinner
+               android:id="@+id/spinner_payment"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"/>
+    
+           <TextView
+               android:id="@+id/label_io"
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:text="@string/io"/>
+       
+           <Spinner
+               android:id="@+id/spinner_io"
+               android:entries="@array/array_io"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"/>
+    
+           <TextView
+               android:id="@+id/label_member"
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:text="@string/member"/>
+       
+           <Spinner
+               android:id="@+id/spinner_member"
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"/>
+    
+    	    <TextView
+    	        android:id="@+id/label_remark"
+    	        android:layout_width="fill_parent" 
+    	        android:layout_height="wrap_content"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:text="@string/remark"/>
+    	
+    	    <EditText
+    	        android:id="@+id/edite_remark"
+    	        android:textAppearance="?android:attr/textAppearanceLarge"
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="wrap_content"/>
+    
+            <Button
+                android:id="@+id/take_snapsot"
+                android:text="@string/take_snapshot"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+    
+            <Gallery
+                android:id="@+id/gallery_snapshot"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+    
+            <DatePicker
+                android:id="@+id/date_picker"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+    	</LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/submit"/>
+</LinearLayout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Finance</string>
+    <string name="add_new_record">增添一条记录</string>
+    <string name="update_record">修改记录</string>
+    <string name="record_detail">消费内容</string>
+    <string name="submit">提交</string>
+    <string name="name">名称:</string>
+    <string name="amount">总数:</string>
+    <string name="type">类型:</string>
+    <string name="payment">收支类型:</string>
+    <string name="member">收支者:</string>
+    <string name="io">收支:</string>
+    <string name="remark">备注:</string>
+    <string name="take_snapshot">获取快照:</string>
+    <string name="snapshot">快照:</string>
+    <string name="date">日期:</string>
+
+    <string name="menu_delete">删除此条记录</string>
+    <string name="menu_view">查看详细内容</string>
+    <string name="menu_update">修改此条记录</string>
+
+    <string name="total_money"><xliff:g>%.2f</xliff:g> ￥</string>
+    <string name="total_income">收入:</string>
+    <string name="total_outcome">支出:</string>
+    <string name="result">结果:</string>
+    <string name="result_money"><xliff:g>%.2f</xliff:g> ￥</string>
+    <string name="current_month_total">本月总计</string>
+
+    <string name="life">生活费</string>
+    <string name="communication">通讯费</string>
+    <string name="traffic">交通费</string>
+    <string name="medical">医疗费</string>
+    <string name="social">交际费</string>
+    <string name="resident">住宿费</string>
+    <string name="study">学习费</string>
+    <string name="travel">旅游费</string>
+    <string name="investment">投资费</string>
+    <string name="wasteful">奢侈费</string>
+    <string name="pet">宠物费</string>
+    <string name="amusement">娱乐费</string>
+    <string name="lend">借款费</string>
+    <string name="clothing">服装费</string>
+    <string name="supplies">个人用品费</string>
+    <string name="salary">工资</string>
+    <string name="others">其他费</string>
+
+    <string name="payment_credit">信用卡</string>
+    <string name="payment_cash">现金</string>
+    <string name="payment_bank">银行卡</string>
+
+    <string name="income">收入</string>
+    <string name="outcome">支出</string>
+
+    <array name="array_io">
+        <item>@string/outcome</item>
+        <item>@string/income</item>
+    </array>
+
+</resources>
