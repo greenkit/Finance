@@ -54,7 +54,7 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
         mTextTotalIncome = (TextView)findViewById(R.id.total_income);
         mTextTotalOutcome = (TextView)findViewById(R.id.total_outcome);
         mTextResult = (TextView)findViewById(R.id.result);
-        mRecordListCursor = mDbHelper.queryRecordsByCurrentMonth();
+        mRecordListCursor = mDbHelper.queryAllRecords();
         mRecordListAdapter = new RecordListAdapter(this, mRecordListCursor);
         mRecordList.setAdapter(mRecordListAdapter);
         mRecordList.setOnCreateContextMenuListener(this);
@@ -89,7 +89,7 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
     @Override
     protected void onResume() {
         super.onResume();
-        updateUI();
+        updateUi();
     }
 
     @Override
@@ -151,12 +151,12 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
             mRecordListCursor.requery();
         }
 
-        updateUI();
+        updateUi();
     }
 
-    private void updateUI () {
+    private void updateUi () {
         if (mRecordListCursor == null) {
-            mRecordListCursor = mDbHelper.queryRecordsByCurrentMonth();
+            mRecordListCursor = mDbHelper.queryAllRecords();
             mRecordListAdapter.changeCursor(mRecordListCursor);
         }
 
