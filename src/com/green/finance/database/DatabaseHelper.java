@@ -262,6 +262,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }, null, null, null, null, null);
     }
 
+    public Cursor queryRecordName() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.query(RecordTable.TABLE_NAME, new String[] {
+                RecordTable.COLUMN_ID + " AS _id ", RecordTable.COLUMN_NAME
+        }, null, null, null, null, null);
+    }
+
     public String[] getPaymentNames() {
         Cursor cursor = queryPayment();
         String[] payment = null;

@@ -4,21 +4,20 @@ import java.util.Date;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.green.finance.database.DatabaseHelper;
 import com.green.finance.database.DatabaseObserver;
@@ -41,15 +40,12 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
 
     private Cursor mRecordListCursor;
 
-    private Resources mResources;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.record_list);
         mDbHelper = DatabaseHelper.getInstance();
         mDbHelper.registerObserver(this);
-        mResources = getResources();
         mRecordList = (ListView)findViewById(R.id.list);
         mTextTotalIncome = (TextView)findViewById(R.id.total_income);
         mTextTotalOutcome = (TextView)findViewById(R.id.total_outcome);
@@ -165,15 +161,15 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
         float result = income - outcome;
 
         if (mTextTotalOutcome != null) {
-            mTextTotalOutcome.setText(mResources.getString(R.string.total_money, outcome));
+            mTextTotalOutcome.setText(getString(R.string.total_money, outcome));
         }
 
         if (mTextTotalIncome != null) {
-            mTextTotalIncome.setText(mResources.getString(R.string.total_money, income));
+            mTextTotalIncome.setText(getString(R.string.total_money, income));
         }
 
         if (mTextResult != null) {
-            mTextResult.setText(mResources.getString(R.string.result_money, result));
+            mTextResult.setText(getString(R.string.result_money, result));
         }
     }
 
@@ -194,7 +190,7 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
             TextView type = (TextView)view.findViewById(R.id.type);
 
             name.setText(cursor.getString(cursor.getColumnIndexOrThrow(RecordTable.COLUMN_NAME)));
-            amount.setText(mResources.getString(R.string.total_money, cursor.getFloat(
+            amount.setText(getString(R.string.total_money, cursor.getFloat(
                     cursor.getColumnIndexOrThrow(RecordTable.COLUMN_AMOUNT))));
             time.setText(new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                     RecordTable.COLUMN_DATE))).toLocaleString());

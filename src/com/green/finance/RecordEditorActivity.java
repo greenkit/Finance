@@ -1,32 +1,38 @@
 
 package com.green.finance;
 
-import com.green.finance.database.DatabaseHelper;
-import com.green.finance.database.datatype.Record;
-import com.green.finance.database.table.MemberTable;
-import com.green.finance.database.table.PaymentTable;
-import com.green.finance.database.table.TypeTable;
-import com.green.finance.utils.Utils;
+import java.util.Calendar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Calendar;
+import com.green.finance.database.DatabaseHelper;
+import com.green.finance.database.datatype.Record;
+import com.green.finance.database.table.MemberTable;
+import com.green.finance.database.table.PaymentTable;
+import com.green.finance.database.table.RecordTable;
+import com.green.finance.database.table.TypeTable;
+import com.green.finance.utils.Utils;
 
 public class RecordEditorActivity extends BaseActivity {
 
     static final String INTENT_ACTION_RECORD_INSERT = "com.green.finance.intent.action.record.insert";
     static final String INTENT_ACTION_RECORD_UPDATE = "com.green.finance.intent.action.record.update";
 
-    private EditText mName;
+    private AutoCompleteTextView mName;
     private EditText mAmount;
     private Spinner mType;
     private Spinner mPayment;
@@ -83,7 +89,11 @@ public class RecordEditorActivity extends BaseActivity {
     private void initUi () {
         setContentView(R.layout.record_editor);
         mDbHelper = DatabaseHelper.getInstance();
-        mName = (EditText)findViewById(R.id.edite_name);
+        mName = (AutoCompleteTextView)findViewById(R.id.edite_name);
+        AutoCompleteCursorAdapter adapter = new AutoCompleteCursorAdapter(this,
+                DatabaseHelper.getInstance().queryRecordName());
+        mName.setAdapter(adapter);
+
         mAmount = (EditText)findViewById(R.id.edite_amount);
 
         mType = (Spinner)findViewById(R.id.spinner_type);
@@ -161,4 +171,23 @@ public class RecordEditorActivity extends BaseActivity {
             }
         }
     };
+
+    private static class AutoCompleteCursorAdapter extends CursorAdapter {
+
+        public AutoCompleteCursorAdapter(Context context, Cursor c) {
+            super(context, c);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(RecordTable.COLUMN_NAME));
+            ((TextView) view).setText(name);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup view) {
+            return new TextView(context);
+        }
+        
+    }
 }
