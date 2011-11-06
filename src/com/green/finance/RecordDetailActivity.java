@@ -11,7 +11,7 @@ import android.widget.Gallery;
 import android.widget.TextView;
 
 import com.green.finance.database.DatabaseHelper;
-import com.green.finance.database.datatype.Record;
+import com.green.finance.datatype.Record;
 
 public class RecordDetailActivity extends BaseActivity {
 

@@ -20,11 +20,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.green.finance.database.DatabaseHelper;
-import com.green.finance.database.datatype.Record;
 import com.green.finance.database.table.MemberTable;
 import com.green.finance.database.table.PaymentTable;
 import com.green.finance.database.table.RecordTable;
 import com.green.finance.database.table.TypeTable;
+import com.green.finance.datatype.Record;
 import com.green.finance.utils.Utils;
 
 public class RecordEditorActivity extends BaseActivity {

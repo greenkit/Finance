@@ -1,4 +1,4 @@
-package com.green.finance.database.datatype;
+package com.green.finance.datatype;
 
 import android.graphics.Bitmap;
 
