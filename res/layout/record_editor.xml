@@ -24,7 +24,8 @@
             <AutoCompleteTextView
                 android:id="@+id/edite_name"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:completionThreshold="1"/>
 
             <TextView
                 android:id="@+id/label_amount"
