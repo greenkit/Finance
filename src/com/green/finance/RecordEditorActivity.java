@@ -29,10 +29,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.green.finance.database.DatabaseHelper;
-import com.green.finance.database.table.MemberTable;
-import com.green.finance.database.table.PaymentTable;
-import com.green.finance.database.table.RecordTable;
-import com.green.finance.database.table.TypeTable;
+import com.green.finance.database.table.TableMember;
+import com.green.finance.database.table.TablePayment;
+import com.green.finance.database.table.TableRecord;
+import com.green.finance.database.table.TableRecordType;
 import com.green.finance.datatype.Record;
 import com.green.finance.utils.Utils;
 
@@ -139,7 +139,7 @@ public class RecordEditorActivity extends BaseActivity {
         mType = (Spinner)findViewById(R.id.spinner_type);
         SimpleCursorAdapter typeAdapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_spinner_item, mDatabaseHelper.queryType(), new String[] {
-                    TypeTable.COLUMN_NAME
+                    TableRecordType.COLUMN_NAME
                 }, new int[] {
                     android.R.id.text1
                 });
@@ -149,7 +149,7 @@ public class RecordEditorActivity extends BaseActivity {
         mPayment = (Spinner)findViewById(R.id.spinner_payment);
         SimpleCursorAdapter paymentAdapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_spinner_item, mDatabaseHelper.queryPayment(), new String[] {
-                    PaymentTable.COLUMN_NAME
+                    TablePayment.COLUMN_NAME
                 }, new int[] {
                     android.R.id.text1
                 });
@@ -159,7 +159,7 @@ public class RecordEditorActivity extends BaseActivity {
         mMember = (Spinner)findViewById(R.id.spinner_member);
         SimpleCursorAdapter memberAdapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_spinner_item, mDatabaseHelper.queryMember(), new String[] {
-                    MemberTable.COLUMN_NAME
+                    TableMember.COLUMN_NAME
                 }, new int[] {
                     android.R.id.text1
                 });
@@ -222,7 +222,7 @@ public class RecordEditorActivity extends BaseActivity {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            String name = cursor.getString(cursor.getColumnIndexOrThrow(RecordTable.COLUMN_NAME));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(TableRecord.COLUMN_NAME));
             ((TextView) view).setText(name);
         }
 
@@ -234,7 +234,7 @@ public class RecordEditorActivity extends BaseActivity {
         @Override
         public CharSequence convertToString(Cursor cursor) {
             if (cursor != null && cursor.getCount() > 0) {
-                return cursor.getString(cursor.getColumnIndex(RecordTable.COLUMN_NAME));
+                return cursor.getString(cursor.getColumnIndex(TableRecord.COLUMN_NAME));
             }
 
             return null;

@@ -2,7 +2,7 @@ package com.green.finance.database.table;
 
 import android.database.sqlite.SQLiteDatabase;
 
-public class SnapshotTable {
+public class TableSnapshot {
 
     public static final String TABLE_NAME = "snapshot";
 

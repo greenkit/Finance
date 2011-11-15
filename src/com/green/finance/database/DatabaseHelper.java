@@ -2,11 +2,11 @@
 package com.green.finance.database;
 
 import com.green.finance.R;
-import com.green.finance.database.table.MemberTable;
-import com.green.finance.database.table.PaymentTable;
-import com.green.finance.database.table.RecordTable;
-import com.green.finance.database.table.SnapshotTable;
-import com.green.finance.database.table.TypeTable;
+import com.green.finance.database.table.TableMember;
+import com.green.finance.database.table.TablePayment;
+import com.green.finance.database.table.TableRecord;
+import com.green.finance.database.table.TableSnapshot;
+import com.green.finance.database.table.TableRecordType;
 import com.green.finance.datatype.Record;
 import com.green.finance.utils.Utils;
 
@@ -50,47 +50,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        MemberTable.createTable(db);
-        PaymentTable.createTable(mContext, db);
-        TypeTable.createTable(mContext, db);
-        RecordTable.createTable(db);
-        SnapshotTable.createTable(db);
+        TableMember.createTable(db);
+        TablePayment.createTable(mContext, db);
+        TableRecordType.createTable(mContext, db);
+        TableRecord.createTable(db);
+        TableSnapshot.createTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        RecordTable.dropTable(db);
-        TypeTable.dropTable(db);
-        PaymentTable.dropTable(db);
-        MemberTable.dropTable(db);
-        SnapshotTable.dropTable(db);
+        TableRecord.dropTable(db);
+        TableRecordType.dropTable(db);
+        TablePayment.dropTable(db);
+        TableMember.dropTable(db);
+        TableSnapshot.dropTable(db);
         onCreate(db);
     }
 
     private Cursor queryRecord (String where, String[] args) {
         if (Utils.isEmpty(where)) { where = "1=1";}
 
-        String sql = "SELECT " + RecordTable.COLUMN_ID + " AS _id "
-                    + ", " + RecordTable.COLUMN_NAME
-                    + ", " + RecordTable.COLUMN_AMOUNT
-                    + ", " + RecordTable.COLUMN_TYPE
-                    + ", " + RecordTable.COLUMN_CONSUMER
-                    + ", " + RecordTable.COLUMN_PAYMENT
-                    + ", " + RecordTable.COLUMN_IO
-                    + ", " + RecordTable.COLUMN_REMARK
-                    + ", " + RecordTable.COLUMN_DATE
-                    + ", " + MemberTable.COLUMN_NAME
-                    + ", " + PaymentTable.COLUMN_NAME
-                    + ", " + SnapshotTable.COLUMN_SNAPSHOT
-                    + ", " + TypeTable.COLUMN_NAME
-                    + " FROM (((" + RecordTable.TABLE_NAME
-                    + " LEFT JOIN " + TypeTable .TABLE_NAME + " ON " + RecordTable.COLUMN_TYPE
-                    + "=" + TypeTable.COLUMN_ID + ") T1" + " LEFT JOIN " + MemberTable.TABLE_NAME
-                    + " ON " + "T1." + RecordTable.COLUMN_CONSUMER + "=" + MemberTable.COLUMN_ID + ") T2"
-                    + " LEFT JOIN " + PaymentTable.TABLE_NAME + " ON " + "T2." + RecordTable.COLUMN_PAYMENT
-                    + "=" + PaymentTable.COLUMN_ID + ") T3 " + " LEFT JOIN " + SnapshotTable.TABLE_NAME + " ON "
-                    + " T3." + RecordTable.COLUMN_ID + "=" + SnapshotTable.COLUMN_RECORD + " WHERE " + where
-                    + " ORDER BY " + RecordTable.COLUMN_DATE + " DESC ";
+        String sql = "SELECT " + TableRecord.COLUMN_ID + " AS _id "
+                    + ", " + TableRecord.COLUMN_NAME
+                    + ", " + TableRecord.COLUMN_AMOUNT
+                    + ", " + TableRecord.COLUMN_TYPE
+                    + ", " + TableRecord.COLUMN_CONSUMER
+                    + ", " + TableRecord.COLUMN_PAYMENT
+                    + ", " + TableRecord.COLUMN_IO
+                    + ", " + TableRecord.COLUMN_REMARK
+                    + ", " + TableRecord.COLUMN_DATE
+                    + ", " + TableMember.COLUMN_NAME
+                    + ", " + TablePayment.COLUMN_NAME
+                    + ", " + TableSnapshot.COLUMN_SNAPSHOT
+                    + ", " + TableRecordType.COLUMN_NAME
+                    + " FROM (((" + TableRecord.TABLE_NAME
+                    + " LEFT JOIN " + TableRecordType .TABLE_NAME + " ON " + TableRecord.COLUMN_TYPE
+                    + "=" + TableRecordType.COLUMN_ID + ") T1" + " LEFT JOIN " + TableMember.TABLE_NAME
+                    + " ON " + "T1." + TableRecord.COLUMN_CONSUMER + "=" + TableMember.COLUMN_ID + ") T2"
+                    + " LEFT JOIN " + TablePayment.TABLE_NAME + " ON " + "T2." + TableRecord.COLUMN_PAYMENT
+                    + "=" + TablePayment.COLUMN_ID + ") T3 " + " LEFT JOIN " + TableSnapshot.TABLE_NAME + " ON "
+                    + " T3." + TableRecord.COLUMN_ID + "=" + TableSnapshot.COLUMN_RECORD + " WHERE " + where
+                    + " ORDER BY " + TableRecord.COLUMN_DATE + " DESC ";
 
         return getReadableDatabase().rawQuery(sql, args);
     }
@@ -99,8 +99,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (Utils.isEmpty(where)) { where = " 1=1 "; }
         SQLiteDatabase db = getReadableDatabase();
         String columeTotal = "total";
-        String sql = "SELECT TOTAL(" + RecordTable.COLUMN_AMOUNT + ") AS " + columeTotal + " FROM "
-        + RecordTable.TABLE_NAME + " WHERE " + where;
+        String sql = "SELECT TOTAL(" + TableRecord.COLUMN_AMOUNT + ") AS " + columeTotal + " FROM "
+        + TableRecord.TABLE_NAME + " WHERE " + where;
         Cursor cursor = db.rawQuery(sql, args);
         if (cursor != null && cursor.moveToFirst()) {
             float total = cursor.getFloat(cursor.getColumnIndexOrThrow("total"));
@@ -112,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private float queryTotalByIo (String io) {
-        String where = RecordTable.COLUMN_IO + "=?";
+        String where = TableRecord.COLUMN_IO + "=?";
         String[] args = new String[] { io };
         
         return queryTotal(where, args);
@@ -120,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteRecordById (long id) {
         SQLiteDatabase db = getWritableDatabase();
-        int count = db.delete(RecordTable.TABLE_NAME, RecordTable.COLUMN_ID + "=?",
+        int count = db.delete(TableRecord.TABLE_NAME, TableRecord.COLUMN_ID + "=?",
                 new String[] { String.valueOf(id)});
         if (count > 0) {
             sObservable.notifyChange();
@@ -128,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor queryRecordsByCurrentMonth() {
-        String where = RecordTable.COLUMN_DATE + " BETWEEN ? AND ? ";
+        String where = TableRecord.COLUMN_DATE + " BETWEEN ? AND ? ";
 
         String[] args = {
                 String.valueOf(Utils.getMinTimeInMillisByCurrentMonth()),
@@ -143,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Record queryRecordById(long id) {
-        String where = RecordTable.COLUMN_ID + "=? ";
+        String where = TableRecord.COLUMN_ID + "=? ";
         String[] args = { String.valueOf(id)};
 
         Cursor c = queryRecord(where, args);
@@ -156,15 +156,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int updateRecordById(Record record, long id) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues(9);
-        values.put(RecordTable.COLUMN_AMOUNT, record.amount);
-        values.put(RecordTable.COLUMN_DATE, record.date);
-        values.put(RecordTable.COLUMN_IO, record.io);
-        values.put(RecordTable.COLUMN_CONSUMER, queryMemberIdByName(record.member));
-        values.put(RecordTable.COLUMN_NAME, record.name);
-        values.put(RecordTable.COLUMN_PAYMENT, queryPaymentIdByName(record.payment));
-        values.put(RecordTable.COLUMN_REMARK, record.remark);
-        values.put(RecordTable.COLUMN_TYPE, queryTypeIdByName(record.type));
-        return db.update(RecordTable.TABLE_NAME, values, RecordTable.COLUMN_ID + "=?",
+        values.put(TableRecord.COLUMN_AMOUNT, record.amount);
+        values.put(TableRecord.COLUMN_DATE, record.date);
+        values.put(TableRecord.COLUMN_IO, record.io);
+        values.put(TableRecord.COLUMN_CONSUMER, queryMemberIdByName(record.member));
+        values.put(TableRecord.COLUMN_NAME, record.name);
+        values.put(TableRecord.COLUMN_PAYMENT, queryPaymentIdByName(record.payment));
+        values.put(TableRecord.COLUMN_REMARK, record.remark);
+        values.put(TableRecord.COLUMN_TYPE, queryTypeIdByName(record.type));
+        return db.update(TableRecord.TABLE_NAME, values, TableRecord.COLUMN_ID + "=?",
                 new String[] {
                     String.valueOf(id)
                 });
@@ -190,15 +190,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues(9);
-        values.put(RecordTable.COLUMN_AMOUNT, amount);
-        values.put(RecordTable.COLUMN_DATE, date);
-        values.put(RecordTable.COLUMN_IO, io);
-        values.put(RecordTable.COLUMN_CONSUMER, member);
-        values.put(RecordTable.COLUMN_NAME, name);
-        values.put(RecordTable.COLUMN_PAYMENT, payment);
-        values.put(RecordTable.COLUMN_REMARK, remark);
-        values.put(RecordTable.COLUMN_TYPE, type);
-        return db.insert(RecordTable.TABLE_NAME, null, values);
+        values.put(TableRecord.COLUMN_AMOUNT, amount);
+        values.put(TableRecord.COLUMN_DATE, date);
+        values.put(TableRecord.COLUMN_IO, io);
+        values.put(TableRecord.COLUMN_CONSUMER, member);
+        values.put(TableRecord.COLUMN_NAME, name);
+        values.put(TableRecord.COLUMN_PAYMENT, payment);
+        values.put(TableRecord.COLUMN_REMARK, remark);
+        values.put(TableRecord.COLUMN_TYPE, type);
+        return db.insert(TableRecord.TABLE_NAME, null, values);
     }
 
     public int queryPaymentIdByName(String payment) {
@@ -207,13 +207,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(PaymentTable.TABLE_NAME, new String[] {
-            PaymentTable.COLUMN_ID
-        }, PaymentTable.COLUMN_NAME + "=?", new String[] {
+        Cursor cursor = db.query(TablePayment.TABLE_NAME, new String[] {
+            TablePayment.COLUMN_ID
+        }, TablePayment.COLUMN_NAME + "=?", new String[] {
             payment
         }, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(PaymentTable.COLUMN_ID));
+            return cursor.getInt(cursor.getColumnIndexOrThrow(TablePayment.COLUMN_ID));
         } else {
             return -1;
         }
@@ -225,13 +225,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TypeTable.TABLE_NAME, new String[] {
-            TypeTable.COLUMN_ID
-        }, TypeTable.COLUMN_NAME + "=?", new String[] {
+        Cursor cursor = db.query(TableRecordType.TABLE_NAME, new String[] {
+            TableRecordType.COLUMN_ID
+        }, TableRecordType.COLUMN_NAME + "=?", new String[] {
             type
         }, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(TypeTable.COLUMN_ID));
+            return cursor.getInt(cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_ID));
         } else {
             return -1;
         }
@@ -243,13 +243,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(MemberTable.TABLE_NAME, new String[] {
-            MemberTable.COLUMN_ID
-        }, MemberTable.COLUMN_NAME + "=?", new String[] {
+        Cursor cursor = db.query(TableMember.TABLE_NAME, new String[] {
+            TableMember.COLUMN_ID
+        }, TableMember.COLUMN_NAME + "=?", new String[] {
             member
         }, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MemberTable.COLUMN_ID));
+            return cursor.getInt(cursor.getColumnIndexOrThrow(TableMember.COLUMN_ID));
         } else {
             return -1;
         }
@@ -257,24 +257,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor queryPayment() {
         SQLiteDatabase db = getReadableDatabase();
-        return db.query(PaymentTable.TABLE_NAME, new String[] {
-                PaymentTable.COLUMN_ID + " AS _id ", PaymentTable.COLUMN_NAME
+        return db.query(TablePayment.TABLE_NAME, new String[] {
+                TablePayment.COLUMN_ID + " AS _id ", TablePayment.COLUMN_NAME
         }, null, null, null, null, null);
     }
 
     public Cursor queryRecordName() {
         SQLiteDatabase db = getReadableDatabase();
-        return db.query(RecordTable.TABLE_NAME, new String[] {
-                RecordTable.COLUMN_ID + " AS _id ", RecordTable.COLUMN_NAME
+        return db.query(TableRecord.TABLE_NAME, new String[] {
+                TableRecord.COLUMN_ID + " AS _id ", TableRecord.COLUMN_NAME
         }, null, null, null, null, null);
     }
 
     public Cursor queryRecordNameByKey(String key) {
         SQLiteDatabase db = getReadableDatabase();
 
-        return db.query(RecordTable.TABLE_NAME, new String[] {
-                RecordTable.COLUMN_ID + " AS _id ", RecordTable.COLUMN_NAME
-        }, RecordTable.COLUMN_NAME + " LIKE '%" + key + "%'", null, RecordTable.COLUMN_NAME, null, null);
+        return db.query(TableRecord.TABLE_NAME, new String[] {
+                TableRecord.COLUMN_ID + " AS _id ", TableRecord.COLUMN_NAME
+        }, TableRecord.COLUMN_NAME + " LIKE '%" + key + "%'", null, TableRecord.COLUMN_NAME, null, null);
     }
 
     public String[] getPaymentNames() {
@@ -283,7 +283,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             int count = cursor.getCount();
             payment = new String[count];
-            int index = cursor.getColumnIndexOrThrow(PaymentTable.COLUMN_NAME);
+            int index = cursor.getColumnIndexOrThrow(TablePayment.COLUMN_NAME);
             for (int i = 0; i < count; i++, cursor.moveToNext()) {
                 payment[i] = cursor.getString(index);
             }
@@ -294,8 +294,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor queryType() {
         SQLiteDatabase db = getReadableDatabase();
-        return db.query(TypeTable.TABLE_NAME, new String[] {
-                TypeTable.COLUMN_ID + " AS _id ", TypeTable.COLUMN_NAME
+        return db.query(TableRecordType.TABLE_NAME, new String[] {
+                TableRecordType.COLUMN_ID + " AS _id ", TableRecordType.COLUMN_NAME
         }, null, null, null, null, null);
     }
 
@@ -305,7 +305,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             int count = cursor.getCount();
             type = new String[count];
-            int index = cursor.getColumnIndexOrThrow(TypeTable.COLUMN_NAME);
+            int index = cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME);
             for (int i = 0; i < count; i++, cursor.moveToNext()) {
                 type[i] = cursor.getString(index);
             }
@@ -316,8 +316,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor queryMember() {
         SQLiteDatabase db = getReadableDatabase();
-        return db.query(MemberTable.TABLE_NAME, new String[] {
-                MemberTable.COLUMN_ID + " AS _id ", MemberTable.COLUMN_NAME
+        return db.query(TableMember.TABLE_NAME, new String[] {
+                TableMember.COLUMN_ID + " AS _id ", TableMember.COLUMN_NAME
         }, null, null, null, null, null);
     }
 
@@ -327,7 +327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             int count = cursor.getCount();
             member = new String[count];
-            int index = cursor.getColumnIndexOrThrow(MemberTable.COLUMN_NAME);
+            int index = cursor.getColumnIndexOrThrow(TableMember.COLUMN_NAME);
             for (int i = 0; i < count; i++, cursor.moveToNext()) {
                 member[i] = cursor.getString(index);
             }
@@ -349,14 +349,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (c != null && c.moveToFirst()) {
             record = new Record();
-            record.name = c.getString(c.getColumnIndexOrThrow(RecordTable.COLUMN_NAME));
-            record.amount = c.getFloat(c.getColumnIndexOrThrow(RecordTable.COLUMN_AMOUNT));
-            record.io = c.getString(c.getColumnIndexOrThrow(RecordTable.COLUMN_IO));
-            record.remark = c.getString(c.getColumnIndexOrThrow(RecordTable.COLUMN_REMARK));
-            record.date = c.getLong(c.getColumnIndexOrThrow(RecordTable.COLUMN_DATE));
-            record.type = c.getString(c.getColumnIndexOrThrow(TypeTable.COLUMN_NAME));
-            record.payment = c.getString(c.getColumnIndexOrThrow(PaymentTable.COLUMN_NAME));
-            record.member = c.getString(c.getColumnIndexOrThrow(MemberTable.COLUMN_NAME));
+            record.name = c.getString(c.getColumnIndexOrThrow(TableRecord.COLUMN_NAME));
+            record.amount = c.getFloat(c.getColumnIndexOrThrow(TableRecord.COLUMN_AMOUNT));
+            record.io = c.getString(c.getColumnIndexOrThrow(TableRecord.COLUMN_IO));
+            record.remark = c.getString(c.getColumnIndexOrThrow(TableRecord.COLUMN_REMARK));
+            record.date = c.getLong(c.getColumnIndexOrThrow(TableRecord.COLUMN_DATE));
+            record.type = c.getString(c.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME));
+            record.payment = c.getString(c.getColumnIndexOrThrow(TablePayment.COLUMN_NAME));
+            record.member = c.getString(c.getColumnIndexOrThrow(TableMember.COLUMN_NAME));
         }
 
         return record;

@@ -3,7 +3,7 @@ package com.green.finance.database.table;
 
 import android.database.sqlite.SQLiteDatabase;
 
-public class RecordTable {
+public class TableRecord {
 
     // Table name:
     public static final String TABLE_NAME = "record";

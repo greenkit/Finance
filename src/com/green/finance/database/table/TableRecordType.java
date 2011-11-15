@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.green.finance.R;
 
-public class TypeTable {
+public class TableRecordType {
 
     public static final String TABLE_NAME = "type";
 
@@ -29,7 +29,7 @@ public class TypeTable {
         ContentValues values = new ContentValues(1);
 
         values.put(COLUMN_NAME, resource.getString(R.string.life));
-        Log.d("Green", "id=" + db.insert(TABLE_NAME, null, values));
+        Log.d("TableType", "id=" + db.insert(TABLE_NAME, null, values));
 
         values.clear();
         values.put(COLUMN_NAME, resource.getString(R.string.communication));

@@ -21,8 +21,8 @@ import android.widget.TextView;
 
 import com.green.finance.database.DatabaseHelper;
 import com.green.finance.database.DatabaseObserver;
-import com.green.finance.database.table.RecordTable;
-import com.green.finance.database.table.TypeTable;
+import com.green.finance.database.table.TableRecord;
+import com.green.finance.database.table.TableRecordType;
 
 public class RecordListActivity extends BaseActivity implements DatabaseObserver{
 
@@ -189,12 +189,12 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
             TextView time = (TextView)view.findViewById(R.id.time);
             TextView type = (TextView)view.findViewById(R.id.type);
 
-            name.setText(cursor.getString(cursor.getColumnIndexOrThrow(RecordTable.COLUMN_NAME)));
+            name.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecord.COLUMN_NAME)));
             amount.setText(getString(R.string.total_money, cursor.getFloat(
-                    cursor.getColumnIndexOrThrow(RecordTable.COLUMN_AMOUNT))));
+                    cursor.getColumnIndexOrThrow(TableRecord.COLUMN_AMOUNT))));
             time.setText(new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
-                    RecordTable.COLUMN_DATE))).toLocaleString());
-            type.setText(cursor.getString(cursor.getColumnIndexOrThrow(TypeTable.COLUMN_NAME)));
+                    TableRecord.COLUMN_DATE))).toLocaleString());
+            type.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME)));
         }
 
         @Override

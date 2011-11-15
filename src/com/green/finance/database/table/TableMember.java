@@ -3,7 +3,7 @@ package com.green.finance.database.table;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-public class MemberTable {
+public class TableMember {
 
     public static final String TABLE_NAME = "member";
 

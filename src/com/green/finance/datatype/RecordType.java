@@ -1,6 +1,6 @@
 package com.green.finance.datatype;
 
-public class Type {
+public class RecordType {
 
     public String name;
 }

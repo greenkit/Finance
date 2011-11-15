@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.green.finance.R;
 
-public class PaymentTable {
+public class TablePayment {
 
     public static final String TABLE_NAME = "payment";
 
