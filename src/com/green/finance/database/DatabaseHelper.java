@@ -292,7 +292,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return payment;
     }
 
-    public Cursor queryType() {
+    public Cursor queryRecordType() {
         SQLiteDatabase db = getReadableDatabase();
         return db.query(TableRecordType.TABLE_NAME, new String[] {
                 TableRecordType.COLUMN_ID + " AS _id ", TableRecordType.COLUMN_NAME
@@ -300,7 +300,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public String[] getTypeNames() {
-        Cursor cursor = queryType();
+        Cursor cursor = queryRecordType();
         String[] type = null;
         if (cursor != null && cursor.moveToFirst()) {
             int count = cursor.getCount();

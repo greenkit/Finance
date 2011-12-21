@@ -1,124 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:background="@drawable/bg"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:background="@drawable/bg"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_height="fill_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/label_name"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content"
+            android:text="@string/name"/>
 
-            <TextView
-                android:id="@+id/label_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/name"/>
+        <AutoCompleteTextView
+            android:id="@+id/edite_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"/>
 
-            <AutoCompleteTextView
-                android:id="@+id/edite_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="1"/>
+        <TextView
+            android:id="@+id/label_amount"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/amount"/>
 
-            <TextView
-                android:id="@+id/label_amount"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/amount"/>
+        <EditText
+            android:id="@+id/edite_amount"
+            android:gravity="right"
+            android:singleLine="true"
+            android:inputType="numberDecimal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
 
-            <EditText
-                android:id="@+id/edite_amount"
-                android:gravity="right"
-                android:singleLine="true"
-                android:inputType="numberDecimal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/label_type"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/type"/>
 
-            <TextView
-                android:id="@+id/label_type"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/type"/>
+        <AutoCompleteTextView
+            android:id="@+id/record_type"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:editable="false"/>
 
-            <Spinner
-                android:id="@+id/spinner_type"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+       <TextView
+           android:id="@+id/label_payment"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/payment"/>
 
-           <TextView
-               android:id="@+id/label_payment"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:text="@string/payment"/>
+       <Spinner
+           android:id="@+id/spinner_payment"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"/>
 
-           <Spinner
-               android:id="@+id/spinner_payment"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"/>
+        <TextView
+           android:id="@+id/label_io"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/io"/>
 
-            <TextView
-               android:id="@+id/label_io"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:text="@string/io"/>
+        <Spinner
+           android:id="@+id/spinner_io"
+           android:entries="@array/array_io"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"/>
 
-            <Spinner
-               android:id="@+id/spinner_io"
-               android:entries="@array/array_io"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"/>
+        <TextView
+           android:id="@+id/label_member"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/member"/>
 
-            <TextView
-               android:id="@+id/label_member"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:text="@string/member"/>
+        <Spinner
+           android:id="@+id/spinner_member"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"/>
 
-            <Spinner
-               android:id="@+id/spinner_member"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/label_remark"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remark"/>
 
-            <TextView
-                android:id="@+id/label_remark"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/remark"/>
+        <EditText
+            android:id="@+id/edite_remark"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
 
-            <EditText
-                android:id="@+id/edite_remark"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/take_snapsot"
+            android:text="@string/take_snapshot"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
 
-            <Button
-                android:id="@+id/take_snapsot"
-                android:text="@string/take_snapshot"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+        <Gallery
+            android:id="@+id/gallery_snapshot"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
 
-            <Gallery
-                android:id="@+id/gallery_snapshot"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+        <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
 
-            <DatePicker
-                android:id="@+id/date_picker"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </ScrollView>
-
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dip"
-        android:text="@string/submit"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dip"
+            android:text="@string/submit"/>
+    </LinearLayout>
+</ScrollView>

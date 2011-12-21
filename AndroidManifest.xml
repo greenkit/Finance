@@ -26,6 +26,7 @@
 
         <activity
             android:name="RecordEditorActivity"
+            android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation"/>
 
         <activity

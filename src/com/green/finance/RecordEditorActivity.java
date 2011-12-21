@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
@@ -38,14 +39,15 @@ import com.green.finance.utils.Utils;
 
 public class RecordEditorActivity extends BaseActivity {
 
+    private final static String TAG = "RecordEditorActivity";
     static final String INTENT_ACTION_RECORD_INSERT = "com.green.finance.intent.action.record.insert";
     static final String INTENT_ACTION_RECORD_UPDATE = "com.green.finance.intent.action.record.update";
 
-    static final long HANDLE_MESSAGE_SEARCH_DELAY = 500L;
+    private static final long MESSAGE_SEARCH_DELAY = 500L;
 
     private AutoCompleteTextView mName;
     private EditText mAmount;
-    private Spinner mType;
+    private AutoCompleteTextView mRecordType;
     private Spinner mPayment;
     private Spinner mMember;
     private Spinner mIO;
@@ -97,11 +99,11 @@ public class RecordEditorActivity extends BaseActivity {
 
         if (INTENT_ACTION_RECORD_INSERT.equals(action)) {
             // Do nothing;
+            return;
         } else if (INTENT_ACTION_RECORD_UPDATE.equals(action)) {
             if (id > -1) {
                 Record record = mDatabaseHelper.queryRecordById(id);
                 if (record != null) {
-                    Utils.setPositionByName(mType, mDatabaseHelper.getTypeNames(), record.type);
                     Utils.setPositionByName(mPayment, mDatabaseHelper.getPaymentNames(), record.payment);
                     Utils.setPositionByName(mMember, mDatabaseHelper.getMemberNames(), record.member);
                     Utils.setPositionByName(mIO, mDatabaseHelper.getIoName(), record.io);
@@ -113,18 +115,16 @@ public class RecordEditorActivity extends BaseActivity {
                     Calendar c = Calendar.getInstance();
                     c.setTimeInMillis(record.date);
                     mDate.updateDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-                } else {
-                    Utils.showToast(this, "Record not existed, id=" + id);
-                    finish();
+                    return;
                 }
-            } else {
-                Utils.showToast(this, "Record not existed, id=" + id);
-                finish();
             }
-        } else {
-            finish();
         }
+
+        Log.d(TAG, "Record is not existed, id=" + id);
+        finish();
     }
+
+    private boolean mRecordTypeDropdownListShow;
 
     private void initUi () {
         setContentView(R.layout.record_editor);
@@ -136,15 +136,26 @@ public class RecordEditorActivity extends BaseActivity {
 
         mAmount = (EditText)findViewById(R.id.edite_amount);
 
-        mType = (Spinner)findViewById(R.id.spinner_type);
-        SimpleCursorAdapter typeAdapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_spinner_item, mDatabaseHelper.queryType(), new String[] {
-                    TableRecordType.COLUMN_NAME
-                }, new int[] {
-                    android.R.id.text1
-                });
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mType.setAdapter(typeAdapter);
+        mRecordType = (AutoCompleteTextView)findViewById(R.id.record_type);
+        mRecordType.setAdapter(new RecordTypeCursorAdapter(this, mDatabaseHelper.queryRecordType()));
+        mRecordType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mRecordTypeDropdownListShow) {
+                    mRecordType.showDropDown();
+                    mRecordTypeDropdownListShow = true;
+                } else {
+                    mRecordType.dismissDropDown();
+                    mRecordTypeDropdownListShow = false;
+                }
+            }
+        });
+        mRecordType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                mRecordTypeDropdownListShow = false;
+            }
+        });
 
         mPayment = (Spinner)findViewById(R.id.spinner_payment);
         SimpleCursorAdapter paymentAdapter = new SimpleCursorAdapter(this,
@@ -173,6 +184,39 @@ public class RecordEditorActivity extends BaseActivity {
         mSubmit.setOnClickListener(mSubmitListener);
     }
 
+    private final class RecordTypeCursorAdapter extends CursorAdapter {
+
+        LayoutInflater mInflater = LayoutInflater.from(RecordEditorActivity.this);
+
+        public RecordTypeCursorAdapter(Context context, Cursor c) {
+            super(context, c);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView text = (TextView) view.findViewById(R.id.text);
+            view.findViewById(R.id.button_delete).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: Implement the record type delete function.
+                }
+            });
+
+            text.setText(cursor.getString(cursor.getColumnIndexOrThrow(
+                    TableRecordType.COLUMN_NAME)));
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.record_type_list_item, null, false);
+        }
+
+        @Override
+        public CharSequence convertToString(Cursor cursor) {
+            return cursor.getString(cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME));
+        }
+    }
+
     private OnClickListener mSubmitListener = new OnClickListener() {
 
         public void onClick(View v) {
@@ -183,7 +227,7 @@ public class RecordEditorActivity extends BaseActivity {
             record.name = mName.getText().toString();
             String amount = mAmount.getText().toString();
             record.amount = Float.valueOf(Utils.isEmpty(amount) ? "0" : amount);
-            record.type = ((TextView)mType.getSelectedView()).getText().toString();
+            record.type = mRecordType.getText().toString();
             record.remark = mRemark.getText().toString();
             record.date = calendar.getTimeInMillis();
             record.payment = ((TextView)mPayment.getSelectedView()).getText().toString();
@@ -196,14 +240,12 @@ public class RecordEditorActivity extends BaseActivity {
 
             if (INTENT_ACTION_RECORD_INSERT.equals(action)) {
                 if (mDatabaseHelper.insertRecord(record) > 0) {
-                    Utils.showToast(RecordEditorActivity.this, "Add record succeeded!");
                     finish();
                 } else {
                     Utils.showToast(RecordEditorActivity.this, "Add record failed!");
                 }
             } else if (INTENT_ACTION_RECORD_UPDATE.equals(action) && id > -1) {
                 if (mDatabaseHelper.updateRecordById(record, id) > 0) {
-                    Utils.showToast(RecordEditorActivity.this, "Update record succeeded!");
                     finish();
                 } else {
                     Utils.showToast(RecordEditorActivity.this, "Update record failed!");
@@ -264,11 +306,11 @@ public class RecordEditorActivity extends BaseActivity {
                 // the prior query will be canceled.
                 // Otherwise, do query.
                 if (mLastMessage != null && SystemClock.uptimeMillis() - mLastMessage.getWhen()
-                        < HANDLE_MESSAGE_SEARCH_DELAY) {
+                        < MESSAGE_SEARCH_DELAY) {
                     mQueryHandler.removeMessages(QueryHandler.HANDLE_MESSAGE_QUERY_RECORD);
                 }
 
-                mLastMessage = mQueryHandler.sendQueryMessageDelay(key, HANDLE_MESSAGE_SEARCH_DELAY);
+                mLastMessage = mQueryHandler.sendQueryMessageDelay(key, MESSAGE_SEARCH_DELAY);
             }
         }
     };
