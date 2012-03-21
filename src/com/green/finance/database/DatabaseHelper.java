@@ -1,25 +1,27 @@
 
 package com.green.finance.database;
 
-import com.green.finance.R;
-import com.green.finance.database.table.TableMember;
-import com.green.finance.database.table.TablePayment;
-import com.green.finance.database.table.TableRecord;
-import com.green.finance.database.table.TableSnapshot;
-import com.green.finance.database.table.TableRecordType;
-import com.green.finance.datatype.Record;
-import com.green.finance.utils.Utils;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.green.finance.R;
+import com.green.finance.database.table.TableMember;
+import com.green.finance.database.table.TablePayment;
+import com.green.finance.database.table.TableRecord;
+import com.green.finance.database.table.TableRecordType;
+import com.green.finance.database.table.TableSnapshot;
+import com.green.finance.datatype.Record;
+import com.green.finance.utils.Utils;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "/sdcard/finance/finance.db";
 
     private static final int DATABASE_VERSION = 1;
@@ -41,6 +43,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new IllegalStateException("DatabaseHelper has NOT been initialized!");
         }
 
+        return sHelper;
+    }
+
+    public static DatabaseHelper peekInstance() {
         return sHelper;
     }
 
@@ -119,12 +125,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void deleteRecordById (long id) {
+        Log.d(TAG, "Delete record id = " + id);
         SQLiteDatabase db = getWritableDatabase();
         int count = db.delete(TableRecord.TABLE_NAME, TableRecord.COLUMN_ID + "=?",
                 new String[] { String.valueOf(id)});
         if (count > 0) {
             sObservable.notifyChange();
         }
+    }
+
+    @Override
+    public synchronized void close() {
+        super.close();
+        sObservable.unregisterAll();
+        sHelper = null;
     }
 
     public Cursor queryRecordsByCurrentMonth() {
@@ -341,7 +355,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void registerObserver(DatabaseObserver observer) {
-        sObservable.registerObserver(observer);
+        if (observer != null) {
+            try {
+                sObservable.registerObserver(observer);
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "This observer is already registered!");
+            }
+        }
+    }
+
+    public void unregisterObserver (DatabaseObserver observer) {
+        if (observer != null) {
+            try {
+                sObservable.unregisterObserver(observer);
+            } catch (IllegalStateException e) {
+                Log.w(TAG, "This observer is not registered!");
+            }
+        }
     }
 
     private Record getRecord(Cursor c) {

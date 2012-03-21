@@ -51,8 +51,6 @@ public class RecordListActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.record_list);
         bindService(new Intent(INTENT_ACTION_DATA_HANDLER_SERVICE), this, BIND_AUTO_CREATE);
-        DatabaseHelper helper = DatabaseHelper.getInstance();
-        helper.registerObserver(this);
         mRecordList = (ListView) findViewById(R.id.list);
         mTextTotalIncome = (TextView) findViewById(R.id.total_income);
         mTextTotalOutcome = (TextView) findViewById(R.id.total_outcome);
@@ -73,13 +71,38 @@ public class RecordListActivity extends BaseActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        DatabaseHelper helper = DatabaseHelper.peekInstance();
+        if (helper != null) {
+            helper.unregisterObserver(this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DatabaseHelper helper = DatabaseHelper.getInstance();
+        helper.registerObserver(this);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startUpdateAll();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(this);
         clear();
     }
 
     private void clear() {
+        // Unbind the data handler service;
+        unbindService(this);
+
+        // Close the opened cursors;
         if (mRecordListAdapter != null) {
             Cursor cursor = mRecordListAdapter.getCursor();
             if (cursor != null) {
@@ -174,7 +197,8 @@ public class RecordListActivity extends BaseActivity
 
     @Override
     public void update() {
-        startUpdateRecordList();
+        Log.d(TAG, "database changed, update UI");
+        startUpdateAll();
     }
 
     private void updateRecordListUI(Cursor cursor) {
@@ -198,12 +222,18 @@ public class RecordListActivity extends BaseActivity
         mService.startTask(DataHandlerService.QUERY_OUTCOME, mCallbackGetTotalOutcome);
     }
 
+    private void startUpdateAll() {
+        startUpdateRecordList();
+        startUpdateIncome();
+        startUpdateOutcome();
+    }
+
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         Log.d(TAG, "onServiceConnected()");
         mService = ((DataHandlerService.LocalBinder) binder).getService();
         // The first time service connect update the record list;
-        startUpdateRecordList();
+        startUpdateAll();
     }
 
     @Override
@@ -220,8 +250,6 @@ public class RecordListActivity extends BaseActivity
                     @Override
                     public void run() {
                         updateRecordListUI(cursor);
-                        startUpdateIncome();
-                        startUpdateOutcome();
                     }
                 });
             }
