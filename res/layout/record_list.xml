@@ -61,27 +61,6 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:gravity="right"
             android:text="@string/total_money"/>
-
-        <TextView
-            android:id="@+id/result_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/total_outcome_label"
-            android:layout_alignParentLeft="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/result"
-            android:gravity="left"/>
-
-        <TextView
-            android:id="@+id/result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/total_outcome"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/result_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:gravity="right"
-            android:text="@string/result_money"/>
     </RelativeLayout>
 
     <View

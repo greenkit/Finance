@@ -57,7 +57,8 @@ public class RecordEditorActivity extends BaseActivity {
     private DatabaseHelper mDatabaseHelper;
     private QueryHandler mQueryHandler;
     private HandlerThread mHandlerThread;
-    private AutoCompleteCursorAdapter mAdapter;
+    private NameAdapter mNameAdapter;
+    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,25 +67,25 @@ public class RecordEditorActivity extends BaseActivity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
+        super.onStop();
+
         if (mHandlerThread != null) {
             mHandlerThread.quit();
             mHandlerThread = null;
             mQueryHandler = null;
         }
-
-        super.onPause();
     }
 
     @Override
-    protected void onResume() {
+    protected void onStart() {
+        super.onStart();
+
         if (mHandlerThread == null) {
             mHandlerThread = new HandlerThread("query");
             mHandlerThread.start();
             mQueryHandler = new QueryHandler(mHandlerThread.getLooper());
         }
-
-        super.onResume();
     }
 
     private void init() {
@@ -120,7 +121,7 @@ public class RecordEditorActivity extends BaseActivity {
             }
         }
 
-        Log.d(TAG, "Record is not existed, id=" + id);
+        Log.d(TAG, "Record is not existed, id = " + id);
         finish();
     }
 
@@ -128,10 +129,11 @@ public class RecordEditorActivity extends BaseActivity {
 
     private void initUi () {
         setContentView(R.layout.record_editor);
+        mInflater = LayoutInflater.from(this);
         mDatabaseHelper = DatabaseHelper.getInstance();
         mName = (AutoCompleteTextView)findViewById(R.id.edite_name);
-        mAdapter = new AutoCompleteCursorAdapter(this, null);
-        mName.setAdapter(mAdapter);
+        mNameAdapter = new NameAdapter(this, null);
+        mName.setAdapter(mNameAdapter);
         mName.addTextChangedListener(mTextWatcher);
 
         mAmount = (EditText)findViewById(R.id.edite_amount);
@@ -185,8 +187,6 @@ public class RecordEditorActivity extends BaseActivity {
     }
 
     private final class RecordTypeCursorAdapter extends CursorAdapter {
-
-        LayoutInflater mInflater = LayoutInflater.from(RecordEditorActivity.this);
 
         public RecordTypeCursorAdapter(Context context, Cursor c) {
             super(context, c);
@@ -254,12 +254,10 @@ public class RecordEditorActivity extends BaseActivity {
         }
     };
 
-    private static class AutoCompleteCursorAdapter extends CursorAdapter {
-        private LayoutInflater mInflater;
+    private class NameAdapter extends CursorAdapter {
 
-        public AutoCompleteCursorAdapter(Context context, Cursor c) {
+        public NameAdapter(Context context, Cursor c) {
             super(context, c);
-            mInflater = LayoutInflater.from(context);
         }
 
         @Override
@@ -300,6 +298,10 @@ public class RecordEditorActivity extends BaseActivity {
 
         @Override
         public void afterTextChanged(Editable text) {
+            if (mQueryHandler == null) {
+                return;
+            }
+
             String key = text.toString().trim();
             if (!Utils.isEmpty(key) && !key.equals(mCurrentText)) {
                 // If the interval of user input is less than the default value,
@@ -337,7 +339,7 @@ public class RecordEditorActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.changeCursor(cursor);
+                        mNameAdapter.changeCursor(cursor);
                     }
                 });
 

@@ -6,7 +6,8 @@ import android.view.Window;
 
 public class BaseActivity extends Activity {
 
-    protected static final String INTENT_EXTRA_RECORD_ID = "intent-extra-record-id";
+    static final String INTENT_EXTRA_RECORD_ID = "intent-extra-record-id";
+    static final String INTENT_ACTION_DATA_HANDLER_SERVICE = "android.intent.action.data.handler";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

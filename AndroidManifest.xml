@@ -30,9 +30,18 @@
             android:configChanges="orientation"/>
 
         <activity
-            android:name=".RecordDetailActivity"
+            android:name="RecordDetailActivity"
             android:configChanges="orientation"
             android:label="@string/record_detail"/>
+
+        <service
+            android:name=".handler.DataHandlerService">
+
+            <intent-filter>
+                <action android:name="android.intent.action.data.handler"/>
+            </intent-filter>
+
+        </service>
 
     </application>
 

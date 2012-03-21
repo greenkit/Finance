@@ -1,11 +1,16 @@
+
 package com.green.finance;
 
 import java.util.Date;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -23,8 +28,13 @@ import com.green.finance.database.DatabaseHelper;
 import com.green.finance.database.DatabaseObserver;
 import com.green.finance.database.table.TableRecord;
 import com.green.finance.database.table.TableRecordType;
+import com.green.finance.handler.DataHandlerService;
+import com.green.finance.handler.DataHandlerService.Callback;
 
-public class RecordListActivity extends BaseActivity implements DatabaseObserver{
+public class RecordListActivity extends BaseActivity
+        implements DatabaseObserver, ServiceConnection {
+
+    private static final String TAG = RecordListActivity.class.getSimpleName();
 
     private ListView mRecordList;
 
@@ -32,27 +42,20 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
 
     private TextView mTextTotalOutcome;
 
-    private TextView mTextResult;
-
-    private DatabaseHelper mDbHelper;
-
     private RecordListAdapter mRecordListAdapter;
 
-    private Cursor mRecordListCursor;
+    private DataHandlerService mService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.record_list);
-        mDbHelper = DatabaseHelper.getInstance();
-        mDbHelper.registerObserver(this);
-        mRecordList = (ListView)findViewById(R.id.list);
-        mTextTotalIncome = (TextView)findViewById(R.id.total_income);
-        mTextTotalOutcome = (TextView)findViewById(R.id.total_outcome);
-        mTextResult = (TextView)findViewById(R.id.result);
-        mRecordListCursor = mDbHelper.queryAllRecords();
-        mRecordListAdapter = new RecordListAdapter(this, mRecordListCursor);
-        mRecordList.setAdapter(mRecordListAdapter);
+        bindService(new Intent(INTENT_ACTION_DATA_HANDLER_SERVICE), this, BIND_AUTO_CREATE);
+        DatabaseHelper helper = DatabaseHelper.getInstance();
+        helper.registerObserver(this);
+        mRecordList = (ListView) findViewById(R.id.list);
+        mTextTotalIncome = (TextView) findViewById(R.id.total_income);
+        mTextTotalOutcome = (TextView) findViewById(R.id.total_outcome);
         mRecordList.setOnCreateContextMenuListener(this);
         mRecordList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -70,37 +73,35 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (mDbHelper != null) {
-            mDbHelper.close();
-        }
-
-        if (mRecordListCursor != null) {
-            mRecordListCursor.close();
-            mRecordListCursor = null;
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(this);
+        clear();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateUi();
+    private void clear() {
+        if (mRecordListAdapter != null) {
+            Cursor cursor = mRecordListAdapter.getCursor();
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        menu.add(0, R.string.option_menu_statistics, 0, R.string.option_menu_statistics);
+        // menu.add(0, R.string.option_menu_statistics, 0,
+        // R.string.option_menu_statistics);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.string.option_menu_statistics) {
-//            Intent intent = new Intent(this, StatisticsActivity.class);
-//            startActivity(intent);
-//            return true;
-//        }
+        // if (item.getItemId() == R.string.option_menu_statistics) {
+        // Intent intent = new Intent(this, StatisticsActivity.class);
+        // startActivity(intent);
+        // return true;
+        // }
 
         return super.onOptionsItemSelected(item);
     }
@@ -115,11 +116,11 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         int itemId = item.getItemId();
         switch (itemId) {
             case R.string.menu_delete:
-                mDbHelper.deleteRecordById(info.id);
+//                mDbHelper.deleteRecordById(info.id);
                 return true;
             case R.string.menu_view:
                 launchRecordDetailActivity(info.id);
@@ -141,38 +142,6 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
         startActivity(intent);
     }
 
-    @Override
-    public void update() {
-        if (mRecordListCursor != null) {
-            mRecordListCursor.requery();
-        }
-
-        updateUi();
-    }
-
-    private void updateUi () {
-        if (mRecordListCursor == null) {
-            mRecordListCursor = mDbHelper.queryAllRecords();
-            mRecordListAdapter.changeCursor(mRecordListCursor);
-        }
-
-        float outcome = mDbHelper.queryTotalOutcome();
-        float income = mDbHelper.queryTotalIncome();
-        float result = income - outcome;
-
-        if (mTextTotalOutcome != null) {
-            mTextTotalOutcome.setText(getString(R.string.total_money, outcome));
-        }
-
-        if (mTextTotalIncome != null) {
-            mTextTotalIncome.setText(getString(R.string.total_money, income));
-        }
-
-        if (mTextResult != null) {
-            mTextResult.setText(getString(R.string.result_money, result));
-        }
-    }
-
     private class RecordListAdapter extends CursorAdapter {
 
         private LayoutInflater inflater;
@@ -184,10 +153,10 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView name = (TextView)view.findViewById(R.id.name);
-            TextView amount = (TextView)view.findViewById(R.id.amount);
-            TextView time = (TextView)view.findViewById(R.id.time);
-            TextView type = (TextView)view.findViewById(R.id.type);
+            TextView name = (TextView) view.findViewById(R.id.name);
+            TextView amount = (TextView) view.findViewById(R.id.amount);
+            TextView time = (TextView) view.findViewById(R.id.time);
+            TextView type = (TextView) view.findViewById(R.id.type);
 
             name.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecord.COLUMN_NAME)));
             amount.setText(getString(R.string.total_money, cursor.getFloat(
@@ -202,4 +171,94 @@ public class RecordListActivity extends BaseActivity implements DatabaseObserver
             return inflater.inflate(R.layout.record_list_item, parent, false);
         }
     }
+
+    @Override
+    public void update() {
+        startUpdateRecordList();
+    }
+
+    private void updateRecordListUI(Cursor cursor) {
+        if (mRecordListAdapter == null) {
+            mRecordListAdapter = new RecordListAdapter(this, cursor);
+            mRecordList.setAdapter(mRecordListAdapter);
+        } else {
+            mRecordListAdapter.changeCursor(cursor);
+        }
+    }
+
+    private void startUpdateRecordList() {
+        mService.startTask(DataHandlerService.QUERY_ALL_RECORD, mCallbackGetAllRecord);
+    }
+
+    private void startUpdateIncome() {
+        mService.startTask(DataHandlerService.QUERY_INCOME, mCallbackGetTotalIncome);
+    }
+
+    private void startUpdateOutcome() {
+        mService.startTask(DataHandlerService.QUERY_OUTCOME, mCallbackGetTotalOutcome);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        Log.d(TAG, "onServiceConnected()");
+        mService = ((DataHandlerService.LocalBinder) binder).getService();
+        // The first time service connect update the record list;
+        startUpdateRecordList();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        // Do nothing;
+    }
+
+    private Callback<Cursor> mCallbackGetAllRecord = new Callback<Cursor>() {
+        @Override
+        public void onFinish(int callId, final Cursor cursor) {
+            Log.d(TAG, "onFinish() : call id # " + callId);
+            if(!isFinishing()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateRecordListUI(cursor);
+                        startUpdateIncome();
+                        startUpdateOutcome();
+                    }
+                });
+            }
+        }
+    };
+
+    private final Callback<Float> mCallbackGetTotalOutcome = new Callback<Float>() {
+        @Override
+        public void onFinish(int callId, final Float value) {
+            Log.d(TAG, "onFinish() : call id # " + callId);
+            if(!isFinishing()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTextTotalOutcome != null) {
+                            mTextTotalOutcome.setText(getString(R.string.total_money, value));
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    private final Callback<Float> mCallbackGetTotalIncome = new Callback<Float>() {
+        @Override
+        public void onFinish(int callId, final Float value) {
+            Log.d(TAG, "onFinish() : call id # " + callId);
+            if(!isFinishing()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTextTotalIncome != null) {
+                            mTextTotalIncome.setText(getString(R.string.total_money, value));
+                        }
+                    }
+                });
+            }
+        }
+    };
 }
