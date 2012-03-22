@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -95,13 +96,12 @@ public class RecordListActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // Unbind the data handler service;
+        unbindService(this);
         clear();
     }
 
     private void clear() {
-        // Unbind the data handler service;
-        unbindService(this);
-
         // Close the opened cursors;
         if (mRecordListAdapter != null) {
             Cursor cursor = mRecordListAdapter.getCursor();
@@ -169,6 +169,13 @@ public class RecordListActivity extends BaseActivity
 
         private LayoutInflater inflater;
 
+        private class ViewHolder {
+            TextView mName;
+            TextView mAmount;
+            TextView mTime;
+            TextView mType;
+        }
+
         public RecordListAdapter(Context context, Cursor c) {
             super(context, c);
             inflater = LayoutInflater.from(RecordListActivity.this);
@@ -176,17 +183,24 @@ public class RecordListActivity extends BaseActivity
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView name = (TextView) view.findViewById(R.id.name);
-            TextView amount = (TextView) view.findViewById(R.id.amount);
-            TextView time = (TextView) view.findViewById(R.id.time);
-            TextView type = (TextView) view.findViewById(R.id.type);
+            ViewHolder holder;
+            if (view.getTag() == null) {
+                holder = new ViewHolder();
+                holder.mName = (TextView) view.findViewById(R.id.name);
+                holder.mAmount = (TextView) view.findViewById(R.id.amount);
+                holder.mTime = (TextView) view.findViewById(R.id.time);
+                holder.mType = (TextView) view.findViewById(R.id.type);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
 
-            name.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecord.COLUMN_NAME)));
-            amount.setText(getString(R.string.total_money, cursor.getFloat(
+            holder.mName.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecord.COLUMN_NAME)));
+            holder.mAmount.setText(getString(R.string.total_money, cursor.getFloat(
                     cursor.getColumnIndexOrThrow(TableRecord.COLUMN_AMOUNT))));
-            time.setText(new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
+            holder.mTime.setText(new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                     TableRecord.COLUMN_DATE))).toLocaleString());
-            type.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME)));
+            holder.mType.setText(cursor.getString(cursor.getColumnIndexOrThrow(TableRecordType.COLUMN_NAME)));
         }
 
         @Override
@@ -201,7 +215,10 @@ public class RecordListActivity extends BaseActivity
         startUpdateAll();
     }
 
-    private void updateRecordListUI(Cursor cursor) {
+    /**
+     * Update the record list UI;
+     */
+    private void updateRecordList(Cursor cursor) {
         if (mRecordListAdapter == null) {
             mRecordListAdapter = new RecordListAdapter(this, cursor);
             mRecordList.setAdapter(mRecordListAdapter);
@@ -210,29 +227,41 @@ public class RecordListActivity extends BaseActivity
         }
     }
 
+    /**
+     * Update the income and outcome UI;
+     */
+    private void updateIOcome(final Pair<Float, Float> io) {
+        // Update income UI;
+        final float income = io.first;
+        if (mTextTotalIncome != null) {
+            mTextTotalIncome.setText(getString(R.string.total_money, income));
+        }
+
+        // Update outcome UI;
+        final float outcome = io.second;
+        if (mTextTotalOutcome != null) {
+            mTextTotalOutcome.setText(getString(R.string.total_money, outcome));
+        }
+    }
+
     private void startUpdateRecordList() {
         mService.startTask(DataHandlerService.QUERY_ALL_RECORD, mCallbackGetAllRecord);
     }
 
-    private void startUpdateIncome() {
-        mService.startTask(DataHandlerService.QUERY_INCOME, mCallbackGetTotalIncome);
-    }
-
-    private void startUpdateOutcome() {
-        mService.startTask(DataHandlerService.QUERY_OUTCOME, mCallbackGetTotalOutcome);
+    private void startUpdateIOcome() {
+        mService.startTask(DataHandlerService.QUERY_IOCOME, mCallbackGetTotalIOcome);
     }
 
     private void startUpdateAll() {
         startUpdateRecordList();
-        startUpdateIncome();
-        startUpdateOutcome();
+        startUpdateIOcome();
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         Log.d(TAG, "onServiceConnected()");
         mService = ((DataHandlerService.LocalBinder) binder).getService();
-        // The first time service connect update the record list;
+        // The first time service connect then update the all UI;
         startUpdateAll();
     }
 
@@ -241,49 +270,30 @@ public class RecordListActivity extends BaseActivity
         // Do nothing;
     }
 
+    private Callback<Pair<Float, Float>> mCallbackGetTotalIOcome = new Callback<Pair<Float, Float>>() {
+        @Override
+        public void onComplete(int callId, final Pair<Float, Float> io) {
+            Log.d(TAG, "onComplete() : call id # " + callId);
+            if(!isFinishing()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateIOcome(io);
+                    }
+                });
+            }
+        }
+    };
+
     private Callback<Cursor> mCallbackGetAllRecord = new Callback<Cursor>() {
         @Override
-        public void onFinish(int callId, final Cursor cursor) {
-            Log.d(TAG, "onFinish() : call id # " + callId);
+        public void onComplete(int callId, final Cursor cursor) {
+            Log.d(TAG, "onComplete() : call id # " + callId);
             if(!isFinishing()) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        updateRecordListUI(cursor);
-                    }
-                });
-            }
-        }
-    };
-
-    private final Callback<Float> mCallbackGetTotalOutcome = new Callback<Float>() {
-        @Override
-        public void onFinish(int callId, final Float value) {
-            Log.d(TAG, "onFinish() : call id # " + callId);
-            if(!isFinishing()) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTextTotalOutcome != null) {
-                            mTextTotalOutcome.setText(getString(R.string.total_money, value));
-                        }
-                    }
-                });
-            }
-        }
-    };
-
-    private final Callback<Float> mCallbackGetTotalIncome = new Callback<Float>() {
-        @Override
-        public void onFinish(int callId, final Float value) {
-            Log.d(TAG, "onFinish() : call id # " + callId);
-            if(!isFinishing()) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTextTotalIncome != null) {
-                            mTextTotalIncome.setText(getString(R.string.total_money, value));
-                        }
+                        updateRecordList(cursor);
                     }
                 });
             }

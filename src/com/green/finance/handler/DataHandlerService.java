@@ -10,14 +10,18 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
+import android.util.Pair;
 
 import com.green.finance.database.DatabaseHelper;
 
 public class DataHandlerService extends Service implements Handler.Callback {
 
+    private static final String TAG = DataHandlerService.class.getSimpleName();
+
     public static final int QUERY_ALL_RECORD = 1;
     public static final int QUERY_INCOME = 2;
-    public static final int QUERY_OUTCOME = 3;
+    public static final int QUERY_IOCOME = 3;
 
     private final IBinder mBinder = new LocalBinder();
     private Handler mHandler;
@@ -69,16 +73,16 @@ public class DataHandlerService extends Service implements Handler.Callback {
                 // Return the data result;
                 returnResult(cursor, msg.obj);
                 return true;
-            case QUERY_INCOME:
-                // Get the data;
+            case QUERY_IOCOME:
+                // Get the income and outcome;
                 final float income = mDatabaseHelper.queryTotalIncome();
-                returnResult(income, msg.obj);
-                return true;
-            case QUERY_OUTCOME:
-                // Return the data result;
                 final float outcome = mDatabaseHelper.queryTotalOutcome();
-                returnResult(outcome, msg.obj);
+                // Return the data result;
+                Pair<Float, Float> io = new Pair<Float, Float>(income, outcome);
+                returnResult(io, msg.obj);
                 return true;
+            default:
+                Log.w(TAG, "Unsupport task, id = " + msg.what);
         }
 
         return false;
@@ -89,7 +93,7 @@ public class DataHandlerService extends Service implements Handler.Callback {
         WeakReference<Callback<T>> refCallback = (WeakReference<Callback<T>>) obj;
         Callback<T> callback = refCallback.get();
         if (callback != null) {
-            callback.onFinish(QUERY_ALL_RECORD, result);
+            callback.onComplete(QUERY_ALL_RECORD, result);
         }
     }
 
@@ -103,6 +107,6 @@ public class DataHandlerService extends Service implements Handler.Callback {
          * @param callId The call id the caller set;
          * @param o The returned value;
          */
-        public void onFinish(int callId, T value);
+        public void onComplete(int callId, T value);
     }
 }
